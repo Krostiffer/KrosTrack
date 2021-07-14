@@ -30,12 +30,12 @@ class HistoryFragment : Fragment() {
         val layout: LinearLayout = root.findViewById(R.id.history_layout)
         for (loc in mainAct.locationDatabase.locationDao().getAllRoutes()){
             if(loc.showTime.isNotEmpty()) {
-                var button = Button(mainAct)
+                val button = Button(mainAct)
                 button.setBackgroundColor(resources.getColor(R.color.transparent_20))
                 button.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-                button.text = loc.uid.toString() + ": " + loc.showTime
+                button.text = "  ${loc.uid}: ${loc.showTime}"
                 button.setOnClickListener {
-                    var intent = Intent(mainAct, ShowMaps::class.java)
+                    val intent = Intent(mainAct, ShowMaps::class.java)
                     intent.putExtra("lat", loc.latitudes)
                     intent.putExtra("lon", loc.longitudes)
                     intent.putExtra("tim", loc.times)

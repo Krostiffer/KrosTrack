@@ -100,7 +100,7 @@ class RunNotificationService : Service() {
                             timeList.add((tim[i].toLong() - tim[1].toLong()))
                             speedList.add(spe[i].toDouble())
 
-                            var distArray = FloatArray(1)
+                            val distArray = FloatArray(1)
                             Location.distanceBetween(lat[i].toDouble(),  lon[i].toDouble(), lat[i+1].toDouble(),  lon[i+1].toDouble(), distArray)
                             distanceList.add(distanceList.last() + distArray[0].toDouble())
                             testspeedList.add((distArray[0]/((tim[i+1].toLong() - tim[1].toLong())/1000000000)).toDouble())
@@ -155,7 +155,7 @@ class RunNotificationService : Service() {
                     locList.add(location)
                     if(startTime.toInt() == 0)
                         startTime = location.elapsedRealtimeNanos
-                    var dArray = FloatArray(1)
+                    val dArray = FloatArray(1)
                     Location.distanceBetween(lastLocation[0],  lastLocation[1], location.latitude,  location.longitude, dArray)
                     if(lastLocation[0] != UNDEFINED_COORD && lastLocation[1] != UNDEFINED_COORD)
                         currentDistance += dArray[0]
@@ -192,7 +192,7 @@ class RunNotificationService : Service() {
                                     break
                                 }
                             }
-
+                            val maxBehind = 6
                             if(!over){
                                 //val delta = (distanceList[currentIndex + 1] - distanceList[currentIndex]) / ((timeList[currentIndex + 1] - timeList[currentIndex]).toDouble() / 1000000)
                                 //val a = distanceList[currentIndex] - (delta * (timeList[currentIndex] - timeList[0]))
@@ -211,7 +211,8 @@ class RunNotificationService : Service() {
                                     getString(R.string.behind)
 
                                 }
-                                if(d > 3) {
+
+                                if(d > maxBehind) {
                                     distanceVibrationPattern(abs(d))
                                 }
                                 d = abs(d)
@@ -223,7 +224,7 @@ class RunNotificationService : Service() {
                                 } else {
                                     getString(R.string.behind)
                                 }
-                                if(d > 3) {
+                                if(d > maxBehind) {
                                     distanceVibrationPattern(abs(d))
                                 }
                                 d = abs(d)
@@ -250,19 +251,18 @@ class RunNotificationService : Service() {
     }
     private fun timeVibrationPattern() {
         Log.println(Log.ASSERT,"Notification", (nanosecondsUnderSetSpeed / 1000000000).toString())
-        var vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         //var scledSeconds = (nanosecondsUnderSetSpeed - MAX_TIME_UNDER_SET_SPEED) / 1000000000
 
         //var timings : LongArray = longArrayOf(scledSeconds * 10, scledSeconds * 30, scledSeconds * 50)
 
-        var vibEffect: VibrationEffect = VibrationEffect.createOneShot(nanosecondsUnderSetSpeed / 30000000, (100 - (3/(nanosecondsUnderSetSpeed / 1000000000))).toInt()
-        )
+        val vibEffect: VibrationEffect = VibrationEffect.createOneShot(nanosecondsUnderSetSpeed / 30000000, (100 - (3/(nanosecondsUnderSetSpeed / 1000000000))).toInt())
         vib.vibrate(vibEffect)
 
     }
     private fun distanceVibrationPattern(d: Double) {
-        var vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        var vibEffect: VibrationEffect = VibrationEffect.createOneShot((d * 25).toLong(), minOf((d*20), 100.0).toInt())
+        val vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        val vibEffect: VibrationEffect = VibrationEffect.createOneShot((d * 35).toLong(), 100)
         vib.vibrate(vibEffect)
 
     }
@@ -311,7 +311,7 @@ class RunNotificationService : Service() {
     private fun startLocationUpdates() {
 
         Log.println(Log.ASSERT, "Service", "Location Updates started")
-        val locationRequest = LocationRequest.create()?.apply {
+        val locationRequest = LocationRequest.create().apply {
             interval = 1000
             fastestInterval = 1000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
