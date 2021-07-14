@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_routes">Verlauf</string>
+    <string name="Go_Button">Laufen Beginnen</string>
+    <string name="Hours">Stunden</string>
+    <string name="Minutes">Minuten</string>
+    <string name="Seconds">Sekunden</string>
+    <string name="InputText">Stell deine Geschwindigkeit ein</string>
+    <string name="run_vs_self">Laufe gegen eine vorher aufgezeichnete Strecke</string>
+    <string name="run_vs_time">Laufe gegen eine feste Geschwindigkeit</string>
+    <string name="notification_setting_name_background_tracking">Hintergrundortung</string>
+    <string name="stop_running">Laufen Stoppen</string>
+    <string name="permissionNotGranted">Standort Berechtigung wurde nicht zugelassen</string>
+    <string name="title_activity_show_maps">Karte</string>
+    <string name="just_run_nothing_else">Einfach laufen, es gibt keinen Geschwindigkeitscheck, nur Tracking der Route</string>
+    <string name="title_run">Laufen</string>
+    <string name="track_too_short_warning">Zu kurz um aufgezeichnet zu werden</string>
+    <string name="select_something_warning">Wähle eine aufgezeichnete Strecke aus um loszulegen</string>
+    <string name="something_went_wrong_warning">Etwas ist schiefgelaufen: Zu kurze oder beschädigte Daten könnten die Ursache sein</string>
+    <string name="behind">hinten</string>
+    <string name="ahead">vorne</string>
+    <string name="alreadyFinished">(Aufzeichnung bereits durch)</string>
+    <string name="help">Hilfe</string>
+    <string name="Settings">Einstellungen</string>
+</resources>

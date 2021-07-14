@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name" translatable="false">KrosTrack</string>
+    <string name="title_run">Run</string>
+    <string name="title_routes">History</string>
+    <string name="Go_Button">Start Running</string>
+    <string name="Hours">Hours</string>
+    <string name="Minutes">Minutes</string>
+    <string name="Seconds">Seconds</string>
+    <string name="InputText">Set your speed</string>
+    <string name="run_vs_self">Run vs a recorded track</string>
+    <string name="run_vs_time">Run vs a fixed Speed</string>
+    <string name="notification_setting_name_background_tracking">Background Location Tracking</string>
+    <string name="stop_running">Stop Running</string>
+    <string name="title_activity_show_maps">Map</string>
+    <string name="permissionNotGranted">Location Permission was not granted</string>
+    <!-- Preference Titles -->
+
+    <!-- Messages Preferences -->
+
+    <!-- Sync Preferences -->
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="just_run_nothing_else">Just run, no speed check, just tracking the route</string>
+    <string name="track_too_short_warning">Too short to be tracked</string>
+    <string name="select_something_warning">Select a recorded track to start</string>
+    <string name="something_went_wrong_warning">Somthing went wrong, too short/corrupt data could be the cause</string>
+    <string name="behind">behind</string>
+    <string name="ahead">ahead</string>
+    <string name="alreadyFinished">(record already finished)</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="help">Help</string>
+    <string name="Settings">Settings</string>
+    <!-- TODO: Remove or change this placeholder text -->
+</resources>
