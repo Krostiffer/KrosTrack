@@ -21,13 +21,4 @@
 
     </fragment>
 
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.krostiffer.krostrack.SettingsFragment"
-        android:label="fragment_notifications"
-        tools:layout="@layout/fragment_notifications"
-        >
-
-    </fragment>
-
 </navigation>

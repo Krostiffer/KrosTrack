@@ -13,9 +13,6 @@ interface LocationDao {
     @Query("SELECT * FROM routeTable WHERE uid = :id")
     fun getRoute(id: Int): LocationExt
 
-    //@Insert
-    //fun insertAll(vararg locationExt: com.krostiffer.krostrack.database.LocationExt)
-
     @Insert
     fun insertLocation(l: LocationExt)
 

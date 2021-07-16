@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.*
 import android.util.Log
 import android.widget.Toast
@@ -26,18 +27,16 @@ class RunNotificationService : Service() {
     val UNDEFINED_COORD = 6000.0 //random hoher Wert, der nicht als Latitude oder Longitude auftaucht (alles über 90 sollte ausreichen)
     var locList: MutableList<Location> = mutableListOf()
     var timeList = mutableListOf<Long>()
-    var speedList = mutableListOf<Double>()
-    var recordedLocationList = mutableListOf<LatLng>()
+    private var speedList = mutableListOf<Double>()
+    private var recordedLocationList = mutableListOf<LatLng>()
     var distanceList = mutableListOf<Double>(0.0)
     private var wantedSpeed: Double = 0.0
     private var startId:Int = 0
-    private var stop = false
-    var testString = "Hallihallo"
-    var notID = 745
-    val rnsBinder = RnsLocalBinder()
-    var left = 0
-    var middle = 0
-    var right = 0
+    private var notID = 745
+    private val rnsBinder = RnsLocalBinder()
+    private var left = 0
+    private var middle = 0
+    private var right = 0
     var mode = ""
     var currentDistance = 0.0
     var currentIndex = 0
@@ -48,7 +47,6 @@ class RunNotificationService : Service() {
     var MAX_TIME_UNDER_SET_SPEED = 5000000000
 
     override fun onBind(intent: Intent): IBinder {
-
         return rnsBinder
     }
 
@@ -65,7 +63,7 @@ class RunNotificationService : Service() {
             mode = intent.getStringExtra("com.krostiffer.krostrack.mode")!!
             Log.println(Log.ASSERT, "Service Mode", mode)
             when (mode) {
-                "just speed" -> {
+                "just speed" -> { //wenn gegen feste Geschwindigkeit, dann werden die SliderWerte übernommen
                     left = intent.getIntExtra("com.krostiffer.krostrack.left", -2)
                     middle = intent.getIntExtra("com.krostiffer.krostrack.middle", -2)
                     right = intent.getIntExtra("com.krostiffer.krostrack.right", -2)
@@ -77,7 +75,7 @@ class RunNotificationService : Service() {
 
                 }
 
-                "run vs self" -> {
+                "run vs self" -> { //Wenn gegen eine Aufzeichnung gelaufen wird, dann wird die entsprechende Aufzeichnung geladen
 
                     val nSpeeds = intent.getStringExtra("com.krostiffer.krostrack.speeds")
                     val nTimes = intent.getStringExtra("com.krostiffer.krostrack.times")
@@ -92,18 +90,16 @@ class RunNotificationService : Service() {
                         val lon = nLon.split("#")
                         val tim = nTimes.split("#")
                         val spe = nSpeeds.split("#")
-                        val testspeedList = mutableListOf<Double>()
-                        Log.println(Log.ASSERT, "Service List Test", lat[1])
-                        var calcdown = 1000000
-                        for (i in 1 until lat.lastIndex){
-                            recordedLocationList.add(LatLng(lat[i].toDouble(), lon[i].toDouble()))
-                            timeList.add((tim[i].toLong() - tim[1].toLong()))
-                            speedList.add(spe[i].toDouble())
 
-                            val distArray = FloatArray(1)
-                            Location.distanceBetween(lat[i].toDouble(),  lon[i].toDouble(), lat[i+1].toDouble(),  lon[i+1].toDouble(), distArray)
-                            distanceList.add(distanceList.last() + distArray[0].toDouble())
-                            testspeedList.add((distArray[0]/((tim[i+1].toLong() - tim[1].toLong())/1000000000)).toDouble())
+                        //for geht von 1 bis vorletztes Element, da Strings vom Aufbau "#one#duo#drei" und durch split der erste eintrag ein leerer String ist. Bis zum vorletzten, da immer der aktuelle und nachfolgende Punkt betrachtet wird
+                        for (i in 1 until lat.lastIndex){ //gespeicherte Strings müssen in passende Listen konvertiert Werden
+                            recordedLocationList.add(LatLng(lat[i].toDouble(), lon[i].toDouble())) //Momentan überflüssig, Koversion von Latitude und Longitude String in LatLng Liste
+                            timeList.add((tim[i].toLong() - tim[1].toLong())) //Speichern der Zeit als Liste der Zeit nach Beginn der Aufzeichnung
+                            speedList.add(spe[i].toDouble()) //Momentan überflüssig, Speichern der Geschwindigkeiten als Liste
+
+                            val distArray = FloatArray(1) //hilfsarray für abstandsmessung
+                            Location.distanceBetween(lat[i].toDouble(),  lon[i].toDouble(), lat[i+1].toDouble(),  lon[i+1].toDouble(), distArray) //Abstandsmessung zwischen aktuellem und nächsten gespeicherten Punkt
+                            distanceList.add(distanceList.last() + distArray[0].toDouble()) //Speicherung der Abstände zwischen Punkten als Liste der Abstände vom Start
                         }
                         Log.println(Log.ASSERT, "Service List Test", timeList.toString())
                         Log.println(Log.ASSERT, "Service List Test", distanceList.toString())
@@ -139,13 +135,12 @@ class RunNotificationService : Service() {
         mFusedLocationClient.removeLocationUpdates(locationCallback)
         stopSelf()
     }
-    override fun onDestroy() {
-        super.onDestroy()
-    }
+
     override fun onCreate() {
         super.onCreate()
-        lastLocation = doubleArrayOf(UNDEFINED_COORD, UNDEFINED_COORD)
+        lastLocation = doubleArrayOf(UNDEFINED_COORD, UNDEFINED_COORD) //letzte Location auf undefined setzen
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
@@ -157,11 +152,11 @@ class RunNotificationService : Service() {
                         startTime = location.elapsedRealtimeNanos
                     val dArray = FloatArray(1)
                     Location.distanceBetween(lastLocation[0],  lastLocation[1], location.latitude,  location.longitude, dArray)
-                    if(lastLocation[0] != UNDEFINED_COORD && lastLocation[1] != UNDEFINED_COORD)
+                    if(lastLocation[0] != UNDEFINED_COORD && lastLocation[1] != UNDEFINED_COORD) //distanz wird erst ab der zweiten location erhöht (da aus einer position keine distanz ermittelt werden kann)
                         currentDistance += dArray[0]
                     lastLocation = doubleArrayOf(location.latitude, location.longitude)
                     when (mode) {
-                        "just speed" -> {
+                        "just speed" -> { //Es wird die letzte "gute" (>= angegeben) Geschwindigkeit bestimmt; Wenn nach einer Zeit (momentan fest 5s) keine "gute" Geschwindigkeit erreicht wird, dann fängt das Handy an zu vibrieren
                             if (locList.size == 1) {
                                 lastGoodSpeedNanoseconds = location.elapsedRealtimeNanos
                             }
@@ -179,31 +174,24 @@ class RunNotificationService : Service() {
                             notficationUpdate((location.speed * 3.6).toString() + "km/h  [" + wantedSpeed + " km/h]", true)
                         }
                         "run vs self" -> {
-                            val t = location.elapsedRealtimeNanos - startTime
-                            Log.println(Log.ASSERT,"Time since start", (t / 1000000000).toString())
+                            //berechnet die Strecke, die aktuelle zurückgelegt wurde und vergleicht sie mit der Strecke, die zum aktuellen Zeitpunkt in der Aufzeichnung zurückgelegt wurde
+                            val t = location.elapsedRealtimeNanos - startTime //aktuelle Zeit in der Route (Zeit nach Start der Aufzeichnung)
                             var over = false
-                            var change = false
-                            while (timeList[currentIndex+1] < t) {
+                            while (timeList[currentIndex+1] < t) { //index so weit hochstellen bis t zwischen aktuellem und nächsthöhrerer Zeit liegt
                                 currentIndex++
-                                change = true
-                                if (currentIndex > timeList.size){
+                                if (currentIndex+1 > timeList.size){ //sonderfall: Aufzeichnung ist vorbei
                                     currentIndex = timeList.size
                                     over = true
                                     break
                                 }
                             }
-                            val maxBehind = 6
-                            if(!over){
-                                //val delta = (distanceList[currentIndex + 1] - distanceList[currentIndex]) / ((timeList[currentIndex + 1] - timeList[currentIndex]).toDouble() / 1000000)
-                                //val a = distanceList[currentIndex] - (delta * (timeList[currentIndex] - timeList[0]))
-                                Log.println(Log.ASSERT,"TimeListCur",
-                                    "$currentIndex , ${timeList[currentIndex] / 1000000000} < [${t/ 1000000000}] < ${timeList[currentIndex + 1] / 1000000000}  "
-                                )
+                            val maxBehind = 6 //hardcodierte Meter hinter der Aufzeichnung
+                            if(!over){ //normalfall, die Aufzeichnung ist noch nicht vorbei
+
+                                Log.println(Log.ASSERT,"TimeListCur", "$currentIndex , ${timeList[currentIndex] / 1000000000} < [${t/ 1000000000}] < ${timeList[currentIndex + 1] / 1000000000}  ")
                                 val amount: Double = (t - timeList[currentIndex].toDouble())/(timeList[currentIndex+1] - timeList[currentIndex]).toDouble()
                                 val calcDistance = lerp(distanceList[currentIndex].toFloat(), distanceList[currentIndex + 1].toFloat(), amount.toFloat())
-                                Log.println(Log.ASSERT,"Calc Distance/amount/curDist",
-                                    "$amount: ${distanceList[currentIndex]} < $calcDistance < ${distanceList[currentIndex+1]}// $currentDistance"
-                                )
+                                Log.println(Log.ASSERT,"Calc Distance/amount/curDist", "$amount: ${distanceList[currentIndex]} < $calcDistance < ${distanceList[currentIndex+1]}// $currentDistance")
                                 var d = calcDistance - currentDistance
                                 val prefix: String = if(d < 0){
                                     getString(R.string.ahead)
@@ -234,8 +222,8 @@ class RunNotificationService : Service() {
 
 
                         }
-                        "just run" -> {
-                            notficationUpdate(location.speed.toString() + "km/h", true)
+                        "just run" -> { // aktualisiert einfach die Nachricht mit der aktuellen Geschwindigkeit
+                            notficationUpdate((location.speed * 3.6).toString() + "km/h", true)
                         }
                     }
 
@@ -249,8 +237,7 @@ class RunNotificationService : Service() {
 
 
     }
-    private fun timeVibrationPattern() {
-        Log.println(Log.ASSERT,"Notification", (nanosecondsUnderSetSpeed / 1000000000).toString())
+    private fun timeVibrationPattern() { //Vibrations"muster" für laufen gegen fixe geschwindigkeit, momentan einfach linear skalierend mit der Zeit, die unter der angegebenen Geschwindigkeit verbracht wurde
         val vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         //var scledSeconds = (nanosecondsUnderSetSpeed - MAX_TIME_UNDER_SET_SPEED) / 1000000000
 

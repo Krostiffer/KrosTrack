@@ -1,7 +1,7 @@
 package com.krostiffer.krostrack.ui.History
 
 import android.content.Intent
-import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,20 +28,23 @@ class HistoryFragment : Fragment() {
         val mainAct: MainActivity = activity as MainActivity
 
         val layout: LinearLayout = root.findViewById(R.id.history_layout)
-        for (loc in mainAct.locationDatabase.locationDao().getAllRoutes()){
+        for (loc in mainAct.locationDatabase.locationDao().getAllRoutes()){ //Zeigt alle Routen als Liste an anklickbaren Buttons, beim Klicken öffnet sich einfach eine Karte mit der Route
             if(loc.showTime.isNotEmpty()) {
-                val button = Button(mainAct)
-                button.setBackgroundColor(resources.getColor(R.color.transparent_20))
-                button.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
-                button.text = "  ${loc.uid}: ${loc.showTime}"
-                button.setOnClickListener {
-                    val intent = Intent(mainAct, ShowMaps::class.java)
-                    intent.putExtra("lat", loc.latitudes)
-                    intent.putExtra("lon", loc.longitudes)
-                    intent.putExtra("tim", loc.times)
-                    intent.putExtra("spe", loc.speeds)
-                    startActivity(intent)
+                val button = Button(mainAct).apply {
+                    setBackgroundColor(resources.getColor(R.color.transparent))
+                    text = "${loc.uid}: ${loc.showTime}" //Jede Route wird nach dem Format "Zahl: Datum Zeit(start) - Zeit(ende)" angezeigt
+                    setOnClickListener {
+                        val intent = Intent(mainAct, ShowMaps::class.java)
+                        intent.putExtra("lat", loc.latitudes)
+                        intent.putExtra("lon", loc.longitudes)
+                        intent.putExtra("tim", loc.times)
+                        intent.putExtra("spe", loc.speeds)
+                        startActivity(intent)
+                    }
                 }
+
+                //button.textAlignment = View.TEXT_ALIGNMENT_TEXT_START
+
                 layout.addView(button)
             }
         }

@@ -22,4 +22,6 @@
     <string name="alreadyFinished">(Aufzeichnung bereits durch)</string>
     <string name="help">Hilfe</string>
     <string name="Settings">Einstellungen</string>
+    <string name="location_not_enabled">Standortermittlung nicht aktiv</string>
+    <string name="turn_location_on">Aktiviere Standort oder GPS auf deinem Gerät. Ohne Standorterkennung funktioniert die App nicht.</string>
 </resources>

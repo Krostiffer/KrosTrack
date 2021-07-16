@@ -30,6 +30,7 @@ class ShowMaps : AppCompatActivity(), OnMapReadyCallback {
     private var timeList: MutableList<Long> = mutableListOf()
     private var speedList: MutableList<Double> = mutableListOf()
 
+    //Übernimmt die gegebene Route und wandelt sie aus Strings in die entsprechenden Listen um
     override fun onCreate(savedInstanceState: Bundle?) {
         if(
             intent.getStringExtra("lat") != null &&
@@ -51,28 +52,18 @@ class ShowMaps : AppCompatActivity(), OnMapReadyCallback {
             isNull = true
         }
 
-
-
         super.onCreate(savedInstanceState)
 
         binding = ActivityShowMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+    //Zeigt eine einfarbige schwarze Linie als Route an
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         //EINFARBIG
@@ -84,8 +75,6 @@ class ShowMaps : AppCompatActivity(), OnMapReadyCallback {
         //    mMap.addPolyline(PolylineOptions().add(pos).color(Color.rgb(0,0, Random(1).nextInt())))
         //}
 
-        //mMap.addMarker(MarkerOptions().position(LatLng(-2730.0, 30.0)))
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-2730.0, 30.0), 20.0f))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locList[0], 15.0f))
     }
 }

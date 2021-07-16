@@ -36,12 +36,13 @@
 
         <activity
             android:name=".ShowMaps"
-            android:label="@string/title_activity_show_maps"></activity>
+            android:label="@string/title_activity_show_maps" />
 
         <service
             android:name=".Service.RunNotificationService"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="false"
+            android:permission="TODO" />
 
 
         <activity

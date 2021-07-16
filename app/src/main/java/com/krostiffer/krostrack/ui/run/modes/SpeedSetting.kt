@@ -31,6 +31,8 @@ class SpeedSetting : Fragment() {
         val seperatorSymbol = root.findViewById<TextView>(R.id.seperatorSymbol)
         val seperatorSymbol2 = root.findViewById<TextView>(R.id.seperatorSymbol2)
 
+        //Die Picker werden auf die in sharedPreference gespeicherten Werte initialisiert und beim ändern wird der Wert sofort in die Einstellungen übernommen
+        //links
         val leftPick = root.findViewById<NumberPicker>(R.id.leftPicker)
         leftPick.minValue = 0
         leftPick.maxValue = 99
@@ -38,7 +40,7 @@ class SpeedSetting : Fragment() {
         leftPick.setOnValueChangedListener{ _, _, _ ->
             changePref(mainAct.LEFT_STORE, leftPick.value)
         }
-
+        //mitte
         val middlePick = root.findViewById<NumberPicker>(R.id.middlePicker)
         middlePick.minValue = 0
         middlePick.maxValue = 99
@@ -47,15 +49,17 @@ class SpeedSetting : Fragment() {
         middlePick.setOnValueChangedListener{ _, _, _ ->
             changePref(mainAct.MIDDLE_STORE, middlePick.value)
         }
-
+        //rechts
         val typeSet = root.findViewById<NumberPicker>(R.id.rightPicker)
         typeSet.minValue = 0
         typeSet.maxValue = 1
         typeSet.displayedValues = arrayOf("km/h", "min/km")
         typeSet.value = mainAct.prefs!!.getInt(mainAct.RIGHT_STORE, 0)
 
+        //ruft das changen von max und sperator einmal am anfang auf, damit bei gespeicherten werten auch die richtigen symbole/max stehen
         changeMaxAndSeperator(typeSet.value, seperatorSymbol, seperatorSymbol2, leftPick, middlePick)
 
+        //Beim Moduswechsel wird max und seperator gewechselt und der Modus in den sharedPreferences gespeichert
         typeSet.setOnValueChangedListener { _, _, _ ->
             changeMaxAndSeperator(typeSet.value, seperatorSymbol, seperatorSymbol2, leftPick, middlePick)
             changePref(mainAct.RIGHT_STORE, typeSet.value)
@@ -63,8 +67,8 @@ class SpeedSetting : Fragment() {
 
         return root
     }
-
-    fun changeMaxAndSeperator(valuePickerRight:Int, seperatorSymbol: TextView, seperatorSymbol2: TextView, leftPick: NumberPicker, middlePick: NumberPicker) {
+    //ändert den Seperator von ":" zu "," sowie das maximum der Zahlen-Picker von 59 zu 99 bei Wechseln auf min/km bzw. km/h
+    private fun changeMaxAndSeperator(valuePickerRight:Int, seperatorSymbol: TextView, seperatorSymbol2: TextView, leftPick: NumberPicker, middlePick: NumberPicker) {
         if (valuePickerRight == 0) {
             seperatorSymbol.visibility = View.INVISIBLE
             seperatorSymbol2.visibility = View.VISIBLE
@@ -77,8 +81,8 @@ class SpeedSetting : Fragment() {
             middlePick.maxValue = 59
         }
     }
-
-    fun changePref(side:String, value: Int) {
+    //Hilfsfunktion um einfach sharedPreferences in der MainActivity zu ändern
+    private fun changePref(side:String, value: Int) {
         val mainAct: MainActivity = activity as MainActivity
         val editor = mainAct.prefs!!.edit()
         editor.putInt(side, value)

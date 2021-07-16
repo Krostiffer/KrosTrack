@@ -20,7 +20,7 @@ import com.krostiffer.krostrack.database.LocationDatabase
 
 class MainActivity : AppCompatActivity() {
 
-    val PREFS_FILENAME = "com.krostiffer.krostrack.prefs"
+    private val PREFS_FILENAME = "com.krostiffer.krostrack.prefs"
     var prefs: SharedPreferences? = null
     val LEFT_STORE = "left_picker"
     val MIDDLE_STORE = "middle_picker"
@@ -33,21 +33,18 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var locationDatabase: LocationDatabase
 
+    //create the Database and the layout of the bottom navigation
     override fun onCreate(savedInstanceState: Bundle?) {
         locationDatabase = Room.databaseBuilder(this.applicationContext, LocationDatabase::class.java, "routeDatabase").allowMainThreadQueries().build()
         super.onCreate(savedInstanceState)
         prefs = getSharedPreferences(PREFS_FILENAME, 0)
         setContentView(R.layout.activity_main)
 
-
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
-
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_run, R.id.navigation_routes
+                R.id.navigation_run, R.id.navigation_routes //Unteres Menü aus RUN und HISTORY
             )
         )
 
@@ -55,17 +52,16 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
     }
+    //three dot menu
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.dotmenu, menu)
         return true
     }
+    //three dot menu Options (currently does nothing but making a Toast notification)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menuhelp -> {
                 Toast.makeText(applicationContext, "click on help", Toast.LENGTH_LONG).show()
-                //loadFragment(SettingsFragment())
-                loadFragment(SettingsFragment())
                 true
             }
             R.id.menusettings ->{
@@ -74,14 +70,6 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-    private fun loadFragment(fragment: Fragment){
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.attach(fragment)
-        transaction.setReorderingAllowed(true)
-        transaction.addToBackStack("")
-
-        transaction.commit()
     }
 
 
