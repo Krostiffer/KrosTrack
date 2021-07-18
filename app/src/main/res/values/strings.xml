@@ -27,8 +27,8 @@
     <string name="ahead">ahead</string>
     <string name="alreadyFinished">(record already finished)</string>
     <!-- Preference Titles -->
-    <string name="fixed_header">Fixed Speed Run Settings</string>
-    <string name="general_header">General Settings</string>
+    <string name="fixed_header">Fixed Speed</string>
+    <string name="general_header">General</string>
 
     <!-- Messages Preferences -->
     <string name="fixed_time">Maximum Time under set speed (seconds)</string>
@@ -41,7 +41,7 @@
     <string name="turn_location_on">Turn on Location or GPS on your device. Without location access the app won\'t work.</string>
     <string name="title_activity_settings">Settings</string>
     <string name="vs_dist">Maximum distance behind record (meters)</string>
-    <string name="vs_header">Vs Recording Run Settings</string>
+    <string name="vs_header">Vs Recording Run</string>
     <string name="phone_language">Phone language</string>
     <string name="choose_valid_number">Choose a valid number</string>
     <string name="helpPageText_fixed">While running, the app constantly checks your current speed against the set speed. If you are below it for a certain amount of time (You can set this in the Settings Menu), your phone will start to vibrate to indicate that you are too slow.</string>

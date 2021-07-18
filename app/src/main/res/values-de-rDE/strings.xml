@@ -23,12 +23,12 @@
     <string name="help">Hilfe</string>
     <string name="Settings">Einstellungen</string>
     <string name="location_not_enabled">Standortermittlung nicht aktiv</string>
-    <string name="turn_location_on">Aktiviere Standort oder GPS auf deinem Gerät. Ohne Standorterkennung funktioniert die App nicht.</string>
+    <string name="turn_location_on">Aktiviere Standort oder GPS auf deinem Gerät. Ohne Standort funktioniert die App nicht.</string>
     <string name="title_activity_settings">Einstellungen</string>
-    <string name="fixed_header">Feste Geschwindigkeit Laufen Einstellungen</string>
-    <string name="general_header">Allgemeine Einstellungen</string>
+    <string name="fixed_header">Feste Geschwindigkeit</string>
+    <string name="general_header">Allgemein</string>
     <string name="fixed_time">Maximale Zeit unter eingestellter Geschwindigkeit (in Sekunden)</string>
-    <string name="vs_header">Gegen Aufzeichnung Laufen Einstellungen</string>
+    <string name="vs_header">Gegen Aufzeichnung Laufen</string>
     <string name="vs_dist">Maximale Distanz hinter der Aufzeichnung (in Metern)</string>
     <string name="phone_language">Sprache des Telefons</string>
     <string name="language_title">Sprache</string>
