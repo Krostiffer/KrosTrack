@@ -16,7 +16,7 @@
     <string name="title_run">Laufen</string>
     <string name="track_too_short_warning">Zu kurz um aufgezeichnet zu werden</string>
     <string name="select_something_warning">Wähle eine aufgezeichnete Strecke aus um loszulegen</string>
-    <string name="something_went_wrong_warning">Etwas ist schiefgelaufen: Zu kurze oder beschädigte Daten könnten die Ursache sein</string>
+    <string name="something_went_wrong_warning">Etwas ist schiefgelaufen</string>
     <string name="behind">hinten</string>
     <string name="ahead">vorne</string>
     <string name="alreadyFinished">(Aufzeichnung bereits durch)</string>
@@ -24,4 +24,13 @@
     <string name="Settings">Einstellungen</string>
     <string name="location_not_enabled">Standortermittlung nicht aktiv</string>
     <string name="turn_location_on">Aktiviere Standort oder GPS auf deinem Gerät. Ohne Standorterkennung funktioniert die App nicht.</string>
+    <string name="title_activity_settings">Einstellungen</string>
+    <string name="fixed_header">Feste Geschwindigkeit Laufen Einstellungen</string>
+    <string name="general_header">Allgemeine Einstellungen</string>
+    <string name="fixed_time">Maximale Zeit unter eingestellter Geschwindigkeit (in Sekunden)</string>
+    <string name="vs_header">Gegen Aufzeichnung Laufen Einstellungen</string>
+    <string name="vs_dist">Maximale Distanz hinter der Aufzeichnung (in Metern)</string>
+    <string name="phone_language">Sprache des Telefons</string>
+    <string name="language_title">Sprache</string>
+    <string name="choose_valid_number">Wähle eine valide Zahl aus</string>
 </resources>

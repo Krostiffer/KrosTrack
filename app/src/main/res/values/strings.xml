@@ -22,27 +22,27 @@
     <string name="just_run_nothing_else">Just run, no speed check, just tracking the route</string>
     <string name="track_too_short_warning">Too short to be tracked</string>
     <string name="select_something_warning">Select a recorded track to start</string>
-    <string name="something_went_wrong_warning">Somthing went wrong, too short/corrupt data could be the cause</string>
+    <string name="something_went_wrong_warning">Somthing went wrong</string>
     <string name="behind">behind</string>
     <string name="ahead">ahead</string>
     <string name="alreadyFinished">(record already finished)</string>
     <!-- Preference Titles -->
-    <string name="messages_header" translatable="false">Messages</string>
-    <string name="sync_header" translatable="false">Sync</string>
+    <string name="fixed_header">Fixed Speed Run Settings</string>
+    <string name="general_header">General Settings</string>
 
     <!-- Messages Preferences -->
-    <string name="signature_title" translatable="false">Your signature</string>
-    <string name="reply_title" translatable="false">Default reply action</string>
+    <string name="fixed_time">Maximum Time under set speed (seconds)</string>
+    <string name="language_title">Language</string>
 
     <!-- Sync Preferences -->
-    <string name="sync_title" translatable="false">Sync email periodically</string>
-    <string name="attachment_title" translatable="false">Download incoming attachments</string>
-    <string name="attachment_summary_on" translatable="false">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off" translatable="false">Only download attachments when manually requested</string>
     <string name="help">Help</string>
     <string name="Settings">Settings</string>
     <string name="location_not_enabled">Location not enabled</string>
     <string name="turn_location_on">Turn on Location or GPS on your device. Without location access the app won\'t work.</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="vs_dist">Maximum distance behind record (meters)</string>
+    <string name="vs_header">Vs Recording Run Settings</string>
+    <string name="phone_language">Phone language</string>
+    <string name="choose_valid_number">Choose a valid number</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

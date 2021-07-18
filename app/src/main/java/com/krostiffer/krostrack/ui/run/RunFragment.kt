@@ -35,6 +35,7 @@ import com.krostiffer.krostrack.database.LocationExt
 import com.krostiffer.krostrack.ui.run.modes.JustRunFragment
 import com.krostiffer.krostrack.ui.run.modes.SpeedSetting
 import com.krostiffer.krostrack.ui.run.modes.VsYourselfFragment
+import java.nio.channels.FileLock
 import java.text.DateFormat.getDateTimeInstance
 import java.text.DateFormat.getTimeInstance
 
@@ -128,7 +129,11 @@ class RunFragment : Fragment() {
             }
         }
 
-
+        val testbutton: Button = root.findViewById(R.id.buttonTEST)
+        testbutton.setOnClickListener {
+            Log.println(Log.ASSERT, "TEST", mainAct.prefs!!.getInt("signature", -3).toString())
+            Log.println(Log.ASSERT, "TEST", mainAct.prefs!!.all.toString())
+        }
 
         val startButton: Button = root.findViewById(R.id.startbutton)
         val stopButton: Button = root.findViewById(R.id.stopbutton)
@@ -158,6 +163,7 @@ class RunFragment : Fragment() {
                         intent.putExtra("com.krostiffer.krostrack.left", mainAct.prefs!!.getInt(mainAct.LEFT_STORE, -1))
                         intent.putExtra("com.krostiffer.krostrack.middle", mainAct.prefs!!.getInt(mainAct.MIDDLE_STORE, -1))
                         intent.putExtra("com.krostiffer.krostrack.right", mainAct.prefs!!.getInt(mainAct.RIGHT_STORE, -1))
+                        intent.putExtra("com.krostiffer.krostrack.timebehind", mainAct.prefs!!.getFloat("TimeBehind", -1.0f))
                     }
                 }
                 1 -> { //Beim Modus 0 (gegen eine Aufzeichnung laufen) wird die angeklickte Aufzeichnung übergeben. die dbid wird in VsYourselfFragment gesetzt durch anklicken der Route
@@ -172,6 +178,7 @@ class RunFragment : Fragment() {
                                     intent.putExtra("com.krostiffer.krostrack.times", route.times)
                                     intent.putExtra("com.krostiffer.krostrack.latitudes", route.latitudes)
                                     intent.putExtra("com.krostiffer.krostrack.longitudes", route.longitudes)
+                                    intent.putExtra("com.krostiffer.krostrack.dist", mainAct.prefs!!.getFloat("DistBehind", -1.0f))
                                 }
                         }
                     }else { //Wenn keine Route angeklickt wird, wird das starten unterbunden und eine Nachricht angezeigt
@@ -289,6 +296,12 @@ class RunFragment : Fragment() {
         intVar = mainAct.prefs!!.getInt(mainAct.MODE_STORE, -2)
         if(intVar == -2)
             editor.putInt(mainAct.MODE_STORE, 0)
+        var floatVar: Float = mainAct.prefs!!.getFloat("TimeBehind", -2.0f)
+        if(floatVar == -2.0f)
+            editor.putFloat("TimeBehind", 5.0f)
+        floatVar = mainAct.prefs!!.getFloat("DistBehind", -2.0f)
+        if(floatVar == -2.0f)
+            editor.putFloat("DistBehind", 6.0f)
         editor.apply()
     }
 

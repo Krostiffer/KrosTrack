@@ -45,6 +45,7 @@ class RunNotificationService : Service() {
     var lastGoodSpeedNanoseconds: Long = 0
     var nanosecondsUnderSetSpeed: Long = 0
     var MAX_TIME_UNDER_SET_SPEED = 5000000000
+    var maxBehind = 6.0f
 
     override fun onBind(intent: Intent): IBinder {
         return rnsBinder
@@ -69,6 +70,12 @@ class RunNotificationService : Service() {
                     right = intent.getIntExtra("com.krostiffer.krostrack.right", -2)
                     if (left < 0 || middle < 0 || right < 0) {
                         Log.println(Log.ASSERT, "Service Error", "values are not correct")
+                        Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
+                    }
+                    MAX_TIME_UNDER_SET_SPEED = (intent.getFloatExtra("com.krostiffer.krostrack.TimeBehind", -2.0f) * 1000000000).toLong()
+                    if (MAX_TIME_UNDER_SET_SPEED < 0) {
+                        MAX_TIME_UNDER_SET_SPEED = 5000000000
+                        Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
                     }
                 }
                 "just run" -> {
@@ -81,7 +88,13 @@ class RunNotificationService : Service() {
                     val nTimes = intent.getStringExtra("com.krostiffer.krostrack.times")
                     val nLat = intent.getStringExtra("com.krostiffer.krostrack.latitudes")
                     val nLon = intent.getStringExtra("com.krostiffer.krostrack.longitudes")
-
+                    maxBehind = intent.getFloatExtra("com.krostiffer.krostrack.dist", -2.0f)
+                    if (maxBehind < 0) {
+                        Log.println(Log.ASSERT, "Service Error",
+                            "maxBehind ist not correct: $maxBehind")
+                        Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
+                        maxBehind = 6.0f
+                    }
                     if (nSpeeds == null || nTimes == null || nLat == null || nLon == null) {
                         Log.println(Log.ASSERT, "Service Error", "values are not correct")
                         Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
@@ -171,7 +184,7 @@ class RunNotificationService : Service() {
                             if (nanosecondsUnderSetSpeed > MAX_TIME_UNDER_SET_SPEED) {
                                 timeVibrationPattern()
                             }
-                            notficationUpdate((location.speed * 3.6).toString() + "km/h  [" + wantedSpeed + " km/h]", true)
+                            notficationUpdate((location.speed * 3.6).format(2) + "km/h  [" + (wantedSpeed * 3.6).format(2) + " km/h]", true)
                         }
                         "run vs self" -> {
                             //berechnet die Strecke, die aktuelle zurückgelegt wurde und vergleicht sie mit der Strecke, die zum aktuellen Zeitpunkt in der Aufzeichnung zurückgelegt wurde
@@ -185,7 +198,7 @@ class RunNotificationService : Service() {
                                     break
                                 }
                             }
-                            val maxBehind = 6 //hardcodierte Meter hinter der Aufzeichnung
+
                             if(!over){ //normalfall, die Aufzeichnung ist noch nicht vorbei
 
                                 Log.println(Log.ASSERT,"TimeListCur", "$currentIndex , ${timeList[currentIndex] / 1000000000} < [${t/ 1000000000}] < ${timeList[currentIndex + 1] / 1000000000}  ")
@@ -204,8 +217,8 @@ class RunNotificationService : Service() {
                                     distanceVibrationPattern(abs(d))
                                 }
                                 d = abs(d)
-                                notficationUpdate("$d $prefix", true)
-                            } else {
+                                notficationUpdate("${d.format(1)}m $prefix", true)
+                            } else { //wenn Aufzeichnung zuende wird einfach die letzte Distanz der Aufzeichnung genommen und damit verglichen
                                 var d = distanceList.last() - currentDistance
                                 val prefix: String = if(d < 0){
                                     getString(R.string.ahead)
@@ -216,14 +229,14 @@ class RunNotificationService : Service() {
                                     distanceVibrationPattern(abs(d))
                                 }
                                 d = abs(d)
-                                notficationUpdate("$d $prefix ${getString(R.string.alreadyFinished)}", true)
+                                notficationUpdate("${d.format(1)}m $prefix ${getString(R.string.alreadyFinished)}", true)
                             }
 
 
 
                         }
                         "just run" -> { // aktualisiert einfach die Nachricht mit der aktuellen Geschwindigkeit
-                            notficationUpdate((location.speed * 3.6).toString() + "km/h", true)
+                            notficationUpdate((location.speed * 3.6).format(2) + "km/h", true)
                         }
                     }
 
@@ -247,6 +260,9 @@ class RunNotificationService : Service() {
         vib.vibrate(vibEffect)
 
     }
+    //copy pasta Funktion um nen Double zu formatieren
+    fun Double.format(digits: Int) = "%.${digits}f".format(this)
+
     private fun distanceVibrationPattern(d: Double) {
         val vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         val vibEffect: VibrationEffect = VibrationEffect.createOneShot((d * 35).toLong(), 100)
@@ -272,6 +288,7 @@ class RunNotificationService : Service() {
             }
         }
     }
+    //Updated die Nachricht
     private fun notficationUpdate(content: String, notify: Boolean): Notification {
 
         val pendingIntent: PendingIntent =
@@ -282,7 +299,7 @@ class RunNotificationService : Service() {
         notificationManager.createNotificationChannel(NotificationChannel("ForegroundID", getText(R.string.notification_setting_name_background_tracking), NotificationManager.IMPORTANCE_LOW))
 
         notification = Builder(this, "ForegroundID")
-            .setContentTitle(getText(R.string.app_name))
+            .setContentTitle(getText(R.string.title_run))
             .setContentText(content)
             .setSmallIcon(R.drawable.run)
             .setContentIntent(pendingIntent)
