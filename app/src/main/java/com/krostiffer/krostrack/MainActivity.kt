@@ -1,34 +1,22 @@
 package com.krostiffer.krostrack
 
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.LocaleList
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.ListPreference
-import androidx.preference.PreferenceManager
 import androidx.room.Room
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.internal.ContextUtils
-import com.krostiffer.krostrack.Service.RunNotificationService
 import com.krostiffer.krostrack.database.LocationDatabase
-import com.krostiffer.krostrack.databinding.ActivityMainBinding.inflate
+import com.krostiffer.krostrack.ui.Help
 import com.krostiffer.krostrack.ui.SettingsActivity
 import java.util.*
 
@@ -86,16 +74,16 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.dotmenu, menu)
         return true
     }
-    //three dot menu Options (currently does nothing but making a Toast notification)
+    //three dot menu Options: Öffnet die Hilfeseite oder die Einstellungen
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menuhelp -> {
-                Toast.makeText(applicationContext, "click on help", Toast.LENGTH_LONG).show()
 
+                startHelp()
                 true
             }
             R.id.menusettings ->{
-                Toast.makeText(applicationContext, "click on settings", Toast.LENGTH_LONG).show()
+
                 startSettings()
                 true
             }
@@ -105,11 +93,13 @@ class MainActivity : AppCompatActivity() {
 
     fun startSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
-
         startActivity(intent)
-
     }
 
+    fun startHelp() {
+        val intent = Intent(this, Help::class.java)
+        startActivity(intent)
+    }
 
     fun updateConfig(wrapper: ContextThemeWrapper, dLocale: Locale) {
 

@@ -44,5 +44,12 @@
     <string name="vs_header">Vs Recording Run Settings</string>
     <string name="phone_language">Phone language</string>
     <string name="choose_valid_number">Choose a valid number</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="helpPageText_fixed">While running, the app constantly checks your current speed against the set speed. If you are below it for a certain amount of time (You can set this in the Settings Menu), your phone will start to vibrate to indicate that you are too slow.</string>
+    <string name="helpPageText_vs">While running the app constantly checks the distance that you traveled against the distance that the recording traveled in the same time. If you are a certain distance behind the recording (You can set this in the Settings Menu) your phone will start to vibrate to indicate that you are too slow.</string>
+    <string name="helpPageText_justRun">No checking against anything, just tracking the route you run, so you can run against it in the future.</string>
+    <string name="helpPageText_History">Just a list of all routes you ran before. Click on one of it to see the route on a map.</string>
+    <string name="helpPageText_Credits">The app, as well as all icons were created by Kristoffer Borrmann</string>
+    <string name="just_run_short">Just run</string>
+    <string name="helpPageText_allModesTrack">All modes are tracking the route you run, so you can run against it in the future.</string>
+    <string name="credits">Credits</string>
 </resources>
