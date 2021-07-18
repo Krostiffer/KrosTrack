@@ -13,7 +13,7 @@ import java.util.*
 
 class SettingsActivity : AppCompatActivity() {
 
-
+    //Standard Settings Activity onCreate
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -27,7 +27,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
 
-
+    //Einstellungsfenster
     class SettingsFragment : PreferenceFragmentCompat() {
 
         private val PREFS_FILENAME = "com.krostiffer.krostrack.prefs"

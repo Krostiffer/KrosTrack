@@ -72,7 +72,7 @@ class RunNotificationService : Service() {
                         Log.println(Log.ASSERT, "Service Error", "values are not correct")
                         Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
                     }
-                    MAX_TIME_UNDER_SET_SPEED = (intent.getFloatExtra("com.krostiffer.krostrack.TimeBehind", -2.0f) * 1000000000).toLong()
+                    MAX_TIME_UNDER_SET_SPEED = (intent.getFloatExtra("com.krostiffer.krostrack.timebehind", -2.0f) * 1000000000).toLong()
                     if (MAX_TIME_UNDER_SET_SPEED < 0) {
                         MAX_TIME_UNDER_SET_SPEED = 5000000000
                         Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
@@ -114,8 +114,8 @@ class RunNotificationService : Service() {
                             Location.distanceBetween(lat[i].toDouble(),  lon[i].toDouble(), lat[i+1].toDouble(),  lon[i+1].toDouble(), distArray) //Abstandsmessung zwischen aktuellem und nächsten gespeicherten Punkt
                             distanceList.add(distanceList.last() + distArray[0].toDouble()) //Speicherung der Abstände zwischen Punkten als Liste der Abstände vom Start
                         }
-                        Log.println(Log.ASSERT, "Service List Test", timeList.toString())
-                        Log.println(Log.ASSERT, "Service List Test", distanceList.toString())
+                        //Log.println(Log.ASSERT, "Service List Test", timeList.toString())
+                        //Log.println(Log.ASSERT, "Service List Test", distanceList.toString())
 
                     }
                 }
@@ -201,10 +201,10 @@ class RunNotificationService : Service() {
 
                             if(!over){ //normalfall, die Aufzeichnung ist noch nicht vorbei
 
-                                Log.println(Log.ASSERT,"TimeListCur", "$currentIndex , ${timeList[currentIndex] / 1000000000} < [${t/ 1000000000}] < ${timeList[currentIndex + 1] / 1000000000}  ")
+                                Log.println(Log.DEBUG,"TimeListCur", "$currentIndex , ${timeList[currentIndex] / 1000000000} < [${t/ 1000000000}] < ${timeList[currentIndex + 1] / 1000000000}  ")
+                                //Lineare Interpolation zwischen zwei Punkten der Aufzeichnung um auf den Wert zu kommen, der theoretisch bei der aktuellen Zeit herauskommt
                                 val amount: Double = (t - timeList[currentIndex].toDouble())/(timeList[currentIndex+1] - timeList[currentIndex]).toDouble()
                                 val calcDistance = lerp(distanceList[currentIndex].toFloat(), distanceList[currentIndex + 1].toFloat(), amount.toFloat())
-                                Log.println(Log.ASSERT,"Calc Distance/amount/curDist", "$amount: ${distanceList[currentIndex]} < $calcDistance < ${distanceList[currentIndex+1]}// $currentDistance")
                                 var d = calcDistance - currentDistance
                                 val prefix: String = if(d < 0){
                                     getString(R.string.ahead)
@@ -241,8 +241,7 @@ class RunNotificationService : Service() {
                     }
 
 
-                    //Log.println(Log.ASSERT,"Notification", location.toString())
-                    //fulltext = location.speed.toString() + "\n" + location.bearing
+                    Log.println(Log.ASSERT,"Notification", location.toString())
                 }
             }
         }
@@ -334,11 +333,10 @@ class RunNotificationService : Service() {
             return
         }
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            Log.println(Log.ASSERT, "Service", "locUpdateERROR2")
+            Log.println(Log.ASSERT, "Service", "Background Location not granted")
         mFusedLocationClient.requestLocationUpdates(locationRequest,
             locationCallback,
             Looper.getMainLooper())
-        Log.println(Log.ASSERT, "Service", "locUpdate2")
     }
 
 

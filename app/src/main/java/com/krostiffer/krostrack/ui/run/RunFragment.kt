@@ -129,16 +129,15 @@ class RunFragment : Fragment() {
             }
         }
 
-        val testbutton: Button = root.findViewById(R.id.buttonTEST)
-        testbutton.setOnClickListener {
-            Log.println(Log.ASSERT, "TEST", mainAct.prefs!!.getInt("signature", -3).toString())
-            Log.println(Log.ASSERT, "TEST", mainAct.prefs!!.all.toString())
-        }
-
         val startButton: Button = root.findViewById(R.id.startbutton)
         val stopButton: Button = root.findViewById(R.id.stopbutton)
-        stopButton.visibility = GONE
-        startButton.visibility = VISIBLE
+        if(!isBound) {
+            stopButton.visibility = GONE
+            startButton.visibility = VISIBLE
+        } else {
+            stopButton.visibility = VISIBLE
+            startButton.visibility = GONE
+        }
 
         startButton.setOnClickListener{
             Log.println(Log.ASSERT, "Button Press", "Service starting...")
@@ -216,7 +215,7 @@ class RunFragment : Fragment() {
         }
 
 
-
+        //Stop wurde geklickt
         stopButton.setOnClickListener{
             Log.println(Log.ASSERT,"Stop Button", "Pressed")
             if(isBound) {

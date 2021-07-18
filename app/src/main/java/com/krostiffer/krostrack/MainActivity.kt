@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         locationDatabase = Room.databaseBuilder(this.applicationContext, LocationDatabase::class.java, "routeDatabase").allowMainThreadQueries().build()
         super.onCreate(savedInstanceState)
         prefs = getSharedPreferences(PREFS_FILENAME, 0)
+        //Stellt die Sprache auf die gespeicherte ein (Keine schöne Variante, aber ich habe andere nicht zum Laufen bekommen)
         var locale: Locale = Locale.getDefault()
         try {
             if(prefs!!.getString("language", "phone").toString() != "phone"){
@@ -47,16 +48,14 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception){
             locale = Locale.getDefault()
         }
-
         val res = resources
         val dm = res.displayMetrics
         val conf = res.configuration
         conf.setLocales(LocaleList(locale))
-
         res.updateConfiguration(conf, dm)
 
         setContentView(R.layout.activity_main)
-        //updateConfig(this as ContextThemeWrapper, Locale("de"))
+        //Das Untere Menü setup-en
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
         val appBarConfiguration = AppBarConfiguration(
@@ -91,29 +90,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //startet die Einstellungsactivity
     fun startSettings() {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
     }
 
+    //startet die Hilfe Activity
     fun startHelp() {
         val intent = Intent(this, Help::class.java)
         startActivity(intent)
     }
-
-    fun updateConfig(wrapper: ContextThemeWrapper, dLocale: Locale) {
-
-        if(dLocale== Locale("") ) // Do nothing if dLocale is null
-            return
-
-        Locale.setDefault(dLocale)
-        val configuration = Configuration()
-        configuration.setLocale(dLocale)
-        wrapper.applyOverrideConfiguration(configuration)
-
-    }
-
-
-
-
 }

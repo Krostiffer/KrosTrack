@@ -69,7 +69,7 @@ class ShowMaps : AppCompatActivity(), OnMapReadyCallback {
         //EINFARBIG
         mMap.addPolyline(PolylineOptions().addAll(locList))
 
-
+        //MEHRFARBIG TEST
         //for(pos in locList){
             //mMap.addMarker(MarkerOptions().position(pos))
         //    mMap.addPolyline(PolylineOptions().add(pos).color(Color.rgb(0,0, Random(1).nextInt())))
