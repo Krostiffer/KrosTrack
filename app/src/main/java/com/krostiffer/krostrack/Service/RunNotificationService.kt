@@ -192,8 +192,8 @@ class RunNotificationService : Service() {
                             var over = false
                             while (timeList[currentIndex+1] < t) { //index so weit hochstellen bis t zwischen aktuellem und nächsthöhrerer Zeit liegt
                                 currentIndex++
-                                if (currentIndex+1 > timeList.size){ //sonderfall: Aufzeichnung ist vorbei
-                                    currentIndex = timeList.size
+                                if (currentIndex >= timeList.lastIndex){ //sonderfall: Aufzeichnung ist vorbei
+                                    currentIndex = timeList.lastIndex-1
                                     over = true
                                     break
                                 }
@@ -219,6 +219,7 @@ class RunNotificationService : Service() {
                                 d = abs(d)
                                 notficationUpdate("${d.format(1)}m $prefix", true)
                             } else { //wenn Aufzeichnung zuende wird einfach die letzte Distanz der Aufzeichnung genommen und damit verglichen
+                                Log.println(Log.DEBUG,"over", "its over")
                                 var d = distanceList.last() - currentDistance
                                 val prefix: String = if(d < 0){
                                     getString(R.string.ahead)
