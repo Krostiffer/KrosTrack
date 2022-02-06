@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">KrosTrack</string>
     <string name="title_run">Run</string>
     <string name="title_routes">History</string>
-    <string name="Go_Button">Start Running</string>
+    <string name="Go_Button">Start</string>
     <string name="Hours">Hours</string>
     <string name="Minutes">Minutes</string>
     <string name="Seconds">Seconds</string>
@@ -10,7 +10,7 @@
     <string name="run_vs_self">Run vs a recorded track</string>
     <string name="run_vs_time">Run vs a fixed Speed</string>
     <string name="notification_setting_name_background_tracking">Background Location Tracking</string>
-    <string name="stop_running">Stop Running</string>
+    <string name="stop_running">Stop</string>
     <string name="title_activity_show_maps">Map</string>
     <string name="permissionNotGranted">Location Permission was not granted</string>
     <!-- Preference Titles -->
@@ -18,7 +18,7 @@
     <!-- Messages Preferences -->
 
     <!-- Sync Preferences -->
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="just_run_nothing_else">Just run, no speed check, just tracking the route</string>
     <string name="track_too_short_warning">Too short to be tracked</string>
     <string name="select_something_warning">Select a recorded track to start</string>
@@ -52,4 +52,6 @@
     <string name="just_run_short">Just run</string>
     <string name="helpPageText_allModesTrack">All modes are tracking the route you run, so you can run against it in the future.</string>
     <string name="credits">Credits</string>
+    <string name="delete">Delete</string>
+    <string name="abort">Abort</string>
 </resources>

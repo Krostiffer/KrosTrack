@@ -47,15 +47,37 @@
         app:layout_constraintTop_toBottomOf="@+id/tabLayout">
 
 
+
     </androidx.viewpager2.widget.ViewPager2>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/livemap"
+        android:name="com.krostiffer.krostrack.ui.run.RunMapsFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/startbutton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+
 
     <Button
         android:id="@+id/startbutton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="24dp"
         android:text="@string/Go_Button"
+        android:textAlignment="center"
         android:visibility="visible"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/run"
+        app:iconGravity="textStart"
+        app:iconSize="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -63,13 +85,20 @@
 
     <Button
         android:id="@+id/stopbutton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="#D32F2F"
         android:backgroundTintMode="add"
         android:text="@string/stop_running"
-        android:visibility="gone"
+        android:textAlignment="center"
+        android:visibility="invisible"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/ic_launcher_background"
+        app:iconGravity="textStart"
+        app:iconSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

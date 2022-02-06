@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_routes">Verlauf</string>
-    <string name="Go_Button">Laufen Beginnen</string>
+    <string name="Go_Button">Start</string>
     <string name="Hours">Stunden</string>
     <string name="Minutes">Minuten</string>
     <string name="Seconds">Sekunden</string>
@@ -9,7 +9,7 @@
     <string name="run_vs_self">Laufe gegen eine vorher aufgezeichnete Strecke</string>
     <string name="run_vs_time">Laufe gegen eine feste Geschwindigkeit</string>
     <string name="notification_setting_name_background_tracking">Hintergrundortung</string>
-    <string name="stop_running">Laufen Stoppen</string>
+    <string name="stop_running">Stop</string>
     <string name="permissionNotGranted">Standort Berechtigung wurde nicht zugelassen</string>
     <string name="title_activity_show_maps">Karte</string>
     <string name="just_run_nothing_else">Einfach laufen, es gibt keinen Geschwindigkeitscheck, nur Tracking der Route</string>
@@ -41,4 +41,6 @@
     <string name="just_run_short">Einfach laufen</string>
     <string name="helpPageText_allModesTrack">Alle Modi zeichnen deine gelaufene Route auf, damit du sie ansehen und in Zukunft dagegen laufen kannst.</string>
     <string name="credits">Credits</string>
+    <string name="delete">Löschen</string>
+    <string name="abort">Abbrechen</string>
 </resources>

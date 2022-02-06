@@ -10,10 +10,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.krostiffer.krostrack.databinding.ActivityShowMapsBinding
 import kotlin.random.Random
 
@@ -74,7 +71,12 @@ class ShowMaps : AppCompatActivity(), OnMapReadyCallback {
             //mMap.addMarker(MarkerOptions().position(pos))
         //    mMap.addPolyline(PolylineOptions().add(pos).color(Color.rgb(0,0, Random(1).nextInt())))
         //}
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locList[0], 15.0f))
+        val latLngBounds = LatLngBounds.Builder()
+        for(loc:LatLng in locList){
+            latLngBounds.include(loc)
+        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(),200))
     }
+
+
 }

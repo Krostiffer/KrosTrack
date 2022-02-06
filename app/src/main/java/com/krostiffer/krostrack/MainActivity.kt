@@ -1,10 +1,10 @@
 package com.krostiffer.krostrack
 
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.LocaleList
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     val MODE_STORE = "run_mode"
     val BUTTON_UID_STORE = "button_uid_store"
     val SELECTED_UID_FROM_DATABASE = "database_uid"
+    var ServiceisBound = false
 
     lateinit var locationDatabase: LocationDatabase
 
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+
     }
     //three dot menu
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -77,12 +79,10 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menuhelp -> {
-
                 startHelp()
                 true
             }
             R.id.menusettings ->{
-
                 startSettings()
                 true
             }
@@ -101,4 +101,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, Help::class.java)
         startActivity(intent)
     }
+
+
 }

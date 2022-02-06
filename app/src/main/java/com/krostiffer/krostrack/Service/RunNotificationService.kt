@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.os.*
 import android.util.Log
 import android.widget.Toast
@@ -17,7 +16,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.math.MathUtils.lerp
 import com.krostiffer.krostrack.R
 import kotlin.math.abs
-import com.google.android.material.math.MathUtils
 
 class RunNotificationService : Service() {
 
@@ -37,6 +35,7 @@ class RunNotificationService : Service() {
     private var left = 0
     private var middle = 0
     private var right = 0
+    private var databaseID = -2
     var mode = ""
     var currentDistance = 0.0
     var currentIndex = 0
@@ -48,6 +47,10 @@ class RunNotificationService : Service() {
     var maxBehind = 6.0f
 
     override fun onBind(intent: Intent): IBinder {
+
+        Log.println(Log.ASSERT, "ONBIND", intent.action.toString())
+        Log.println(Log.ASSERT, "ONBIND", intent.toString())
+        Log.println(Log.ASSERT, "ONBIND", intent.resolveActivity(packageManager).toString())
         return rnsBinder
     }
 
@@ -55,7 +58,6 @@ class RunNotificationService : Service() {
         fun getService() : RunNotificationService {
             return this@RunNotificationService
         }
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -88,10 +90,11 @@ class RunNotificationService : Service() {
                     val nTimes = intent.getStringExtra("com.krostiffer.krostrack.times")
                     val nLat = intent.getStringExtra("com.krostiffer.krostrack.latitudes")
                     val nLon = intent.getStringExtra("com.krostiffer.krostrack.longitudes")
-                    maxBehind = intent.getFloatExtra("com.krostiffer.krostrack.dist", -2.0f)
-                    if (maxBehind < 0) {
+                    maxBehind = intent.getFloatExtra("com.krostiffer.krostrack.dist", -2f)
+                    databaseID = intent.getIntExtra("com.krostiffer.krostrack.databaseid", -2)
+                    if (maxBehind < 0 || databaseID < 0) {
                         Log.println(Log.ASSERT, "Service Error",
-                            "maxBehind ist not correct: $maxBehind")
+                            "maxBehind ist not correct: $maxBehind or database ID is not correct: $databaseID")
                         Toast.makeText(this, getString(R.string.something_went_wrong_warning), Toast.LENGTH_LONG).show()
                         maxBehind = 6.0f
                     }
@@ -116,12 +119,9 @@ class RunNotificationService : Service() {
                         }
                         //Log.println(Log.ASSERT, "Service List Test", timeList.toString())
                         //Log.println(Log.ASSERT, "Service List Test", distanceList.toString())
-
                     }
                 }
-
             }
-
         }
 
         this.startId = startId
@@ -134,12 +134,7 @@ class RunNotificationService : Service() {
             notification
         )
 
-
         return super.onStartCommand(intent, flags, startId)
-    }
-
-    fun returnLocationList(): MutableList<Location> {
-        return locList
     }
 
     fun killService() {
@@ -147,6 +142,16 @@ class RunNotificationService : Service() {
         notificationManager.cancelAll()
         mFusedLocationClient.removeLocationUpdates(locationCallback)
         stopSelf()
+    }
+
+
+    private fun sendBroadcast(s: String, locList: MutableList<Location>, databaseID: Int) {
+        Intent().also { intent ->
+            intent.action = s
+            intent.putExtra("location", lastLocation)
+            intent.putExtra("databaseid", databaseID)
+            sendBroadcast(intent)
+        }
     }
 
     override fun onCreate() {
@@ -161,6 +166,7 @@ class RunNotificationService : Service() {
                 for (location in locationResult.locations){
                     calculateWantedSpeed()
                     locList.add(location)
+
                     if(startTime.toInt() == 0)
                         startTime = location.elapsedRealtimeNanos
                     val dArray = FloatArray(1)
@@ -243,6 +249,9 @@ class RunNotificationService : Service() {
 
 
                     Log.println(Log.ASSERT,"Notification", location.toString())
+                    //sendBroadcast(location.toString())
+
+                    sendBroadcast("LOCATION", locList, databaseID)
                 }
             }
         }
@@ -250,6 +259,9 @@ class RunNotificationService : Service() {
 
 
     }
+
+
+
     private fun timeVibrationPattern() { //Vibrations"muster" für laufen gegen fixe geschwindigkeit, momentan einfach linear skalierend mit der Zeit, die unter der angegebenen Geschwindigkeit verbracht wurde
         val vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         //var scledSeconds = (nanosecondsUnderSetSpeed - MAX_TIME_UNDER_SET_SPEED) / 1000000000
@@ -267,7 +279,6 @@ class RunNotificationService : Service() {
         val vib =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         val vibEffect: VibrationEffect = VibrationEffect.createOneShot((d * 35).toLong(), 100)
         vib.vibrate(vibEffect)
-
     }
     private fun calculateWantedSpeed() {
         when (mode) {
@@ -297,7 +308,6 @@ class RunNotificationService : Service() {
             }
         val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(NotificationChannel("ForegroundID", getText(R.string.notification_setting_name_background_tracking), NotificationManager.IMPORTANCE_LOW))
-
         notification = Builder(this, "ForegroundID")
             .setContentTitle(getText(R.string.title_run))
             .setContentText(content)

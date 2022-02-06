@@ -8,9 +8,7 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +21,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.findFragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.dynamic.SupportFragmentWrapper
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.krostiffer.krostrack.*
@@ -35,9 +37,7 @@ import com.krostiffer.krostrack.database.LocationExt
 import com.krostiffer.krostrack.ui.run.modes.JustRunFragment
 import com.krostiffer.krostrack.ui.run.modes.SpeedSetting
 import com.krostiffer.krostrack.ui.run.modes.VsYourselfFragment
-import java.nio.channels.FileLock
 import java.text.DateFormat.getDateTimeInstance
-import java.text.DateFormat.getTimeInstance
 
 
 class RunFragment : Fragment() {
@@ -49,6 +49,9 @@ class RunFragment : Fragment() {
     val nrOfMenus = 3 //set to 4 if new mode
     private val FINE_REQUEST_CODE = 101
     private val BACKGROUND_REQUEST_CODE = 102
+    lateinit var mainHandler: Handler
+
+
 
     private inner class PagerAdapter(f:FragmentActivity) : FragmentStateAdapter(f) { //Erstellt den Inhalt des Tablayout der entsprechenden Modi
         var flist = listOf(SpeedSetting(), VsYourselfFragment(), JustRunFragment()) //Nach Zeit, Nach Route, Einfach so
@@ -60,14 +63,39 @@ class RunFragment : Fragment() {
         override fun createFragment(position: Int): Fragment {
             return flist[position]
         }
-
-
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val mainAct: MainActivity = activity as MainActivity
+        mainHandler = Handler(Looper.getMainLooper())
+        val locationDatabase: LocationDatabase = mainAct.locationDatabase
+        val locationDao: LocationDao = locationDatabase.locationDao()
+        if (mainAct.ServiceisBound) {
+            //Die LocationList des Services wird übernommen und der Service beendet und unbinded
+            val locList = rnService.locList
+            rnService.killService()
+            mainAct.unbindService(servconn)
+            mainAct.ServiceisBound = false
+
+            if (locList.isNotEmpty() && locList.size > 1) { //sobald mindestens zwei Locations erfasst wurde, wird die Route in der Datenbank gespeichert
+                val l = addToDatabase(locList, locationDao)
+                val intent = Intent(mainAct, ShowMaps::class.java)
+                intent.putExtra("lat", l[0])
+                intent.putExtra("lon", l[1])
+                intent.putExtra("spe", l[2])
+                intent.putExtra("tim", l[3])
+                startActivity(intent)
+            } else {
+                Toast.makeText(mainAct, getString(R.string.track_too_short_warning), Toast.LENGTH_LONG).show() //wenn weniger als zwei Positionen erfasst wurden, dann wird eine Nachricht angezeigt, dass die Strecke zu kurz war
+            }
+            super.onDestroy()
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         prefResetIfNotSet()
         val root = inflater.inflate(R.layout.fragment_run, container, false)
@@ -105,21 +133,24 @@ class RunFragment : Fragment() {
 
         //Connection zum Service
         servconn = object : ServiceConnection {
-            override fun onServiceConnected(className: ComponentName,
-                                            service: IBinder
+            override fun onServiceConnected(
+                className: ComponentName,
+                service: IBinder,
             ) {
                 val binder = service as RunNotificationService.RnsLocalBinder
                 rnService = binder.getService()
-                isBound = true
+                mainAct.ServiceisBound = true
             }
+
+
 
             override fun onServiceDisconnected(name: ComponentName) {
                 Log.println(Log.ASSERT,"ServiceConnection", "Service Disconnected")
-                isBound = false
+                mainAct.ServiceisBound = false
             }
         }
         //Location überprüfung, Background Location könnte unnötig sein
-        if( ActivityCompat.checkSelfPermission(mainAct, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+        if(ActivityCompat.checkSelfPermission(mainAct, android.Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(mainAct, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
             ActivityCompat.checkSelfPermission(mainAct, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -131,13 +162,19 @@ class RunFragment : Fragment() {
 
         val startButton: Button = root.findViewById(R.id.startbutton)
         val stopButton: Button = root.findViewById(R.id.stopbutton)
-        if(!isBound) {
+        val laufMaps: androidx.fragment.app.FragmentContainerView = root.findViewById(R.id.livemap)
+        //POSITION AUF MAINACT PACKEN
+
+        if(!mainAct.ServiceisBound) {
+            laufMaps.visibility = GONE
             stopButton.visibility = GONE
             startButton.visibility = VISIBLE
         } else {
+            laufMaps.visibility = VISIBLE
             stopButton.visibility = VISIBLE
             startButton.visibility = GONE
         }
+
 
         startButton.setOnClickListener{
             Log.println(Log.ASSERT, "Button Press", "Service starting...")
@@ -178,6 +215,7 @@ class RunFragment : Fragment() {
                                     intent.putExtra("com.krostiffer.krostrack.latitudes", route.latitudes)
                                     intent.putExtra("com.krostiffer.krostrack.longitudes", route.longitudes)
                                     intent.putExtra("com.krostiffer.krostrack.dist", mainAct.prefs!!.getFloat("DistBehind", -1.0f))
+                                    intent.putExtra("com.krostiffer.krostrack.databaseid", dbid)
                                 }
                         }
                     }else { //Wenn keine Route angeklickt wird, wird das starten unterbunden und eine Nachricht angezeigt
@@ -210,23 +248,26 @@ class RunFragment : Fragment() {
                 }
                 //Könnte man smoother lösen, aber der Startbutton verschwindet und der Stopbutton (an der selben position) erscheint
                 stopButton.visibility = VISIBLE
+                laufMaps.visibility = VISIBLE
                 startButton.visibility = GONE
             }
         }
 
 
+
         //Stop wurde geklickt
         stopButton.setOnClickListener{
             Log.println(Log.ASSERT,"Stop Button", "Pressed")
-            if(isBound) {
+            if(mainAct.ServiceisBound) {
                 //Könnte man smoother lösen, aber der Stopbutton verschwindet und der Startbutton (an der selben position) erscheint
                 stopButton.visibility = GONE
+                laufMaps.visibility = GONE
                 startButton.visibility = VISIBLE
                 //Die LocationList des Services wird übernommen und der Service beendet und unbinded
                 val locList = rnService.locList
                 rnService.killService()
                 mainAct.unbindService(servconn)
-                isBound = false
+                mainAct.ServiceisBound = false
 
                 if (locList.isNotEmpty() && locList.size > 1) { //sobald mindestens zwei Locations erfasst wurde, wird die Route in der Datenbank gespeichert
                     val l = addToDatabase(locList, locationDao)
@@ -249,13 +290,14 @@ class RunFragment : Fragment() {
         return root
     }
 
+
     //Die gegebene Liste an Locations wird in die Datenbank in Form von Strings übertragen (Da keine komplexen Datentypen einfach unterstützt werden)
     //Die entsprechenden Strings werden wieder (als Liste) zurückgegeben
     private fun addToDatabase(locList: MutableList<Location>, locationDao: LocationDao): List<String>{
-        var latitudes: String = ""
-        var longitudes: String = ""
-        var speeds: String = ""
-        var times: String = ""
+        var latitudes = ""
+        var longitudes = ""
+        var speeds = ""
+        var times = ""
         //Die Werte werden mit # getrennt als String gespeichert
         for (loc in locList){
             latitudes = latitudes + "#" + loc.latitude.toString()
@@ -266,7 +308,7 @@ class RunFragment : Fragment() {
 
         locationDao.insertLocation(
             LocationExt(latitudes = latitudes, longitudes = longitudes, speeds = speeds, times = times, uid = 0,
-            showTime = getDateTimeInstance().format(locList.first().time) + " - " +  getTimeInstance().format(locList.last().time)
+            showTime = getDateTimeInstance().format(locList.first().time) //+ " - " +  getTimeInstance().format(locList.last().time)
         )
         )
         return listOf(latitudes, longitudes, speeds, times)
