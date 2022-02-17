@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.BitmapFactory.decodeResource
+import android.graphics.Color
 import android.location.Location
 import androidx.fragment.app.Fragment
 
@@ -32,12 +33,14 @@ class RunMapsFragment : Fragment() {
     var mapReady: Boolean = false
     private var locList: MutableList<LatLng> = mutableListOf()
     private var recordedLocations: MutableList<LatLng> = mutableListOf()
+    private var recordedTimes: MutableList<Long> = mutableListOf()
 
     private val callback = OnMapReadyCallback { googleMap ->
         mMap = googleMap
         mapReady = true
         val sydney = LatLng(53.0, 53.0)
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,18f))
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.Builder().bearing(2f).target(sydney).zoom(18f).build()))
     }
 
     override fun onCreateView(
@@ -61,34 +64,55 @@ class RunMapsFragment : Fragment() {
 
         mainHandler.post(object : Runnable {
             var once: Boolean = true
+            var recordedindex = 0
             override fun run() {
                 if(mapReady) {
                     //Log.println(Log.ASSERT, "Countdown", receiver!!.loc.first().toString())
                     val locationLatLng = LatLng(receiver!!.loc.first(), receiver!!.loc.last())
                     if (locationLatLng.latitude != 0.0 && locationLatLng.longitude != 0.0) {
                         locList.add(locationLatLng)
-                    }
 
-                    if(once){
-                        if(receiver!!.dbid >=0){
-                            once = false
-                            val dat = mainAct.locationDatabase.locationDao().getRoute(receiver!!.dbid)
-                            val lat = dat.latitudes.split("#")
-                            val lon = dat.longitudes.split("#")
-                            for (i in 1 .. lat.lastIndex) {
-                                recordedLocations.add(LatLng(lat[i].toDouble(), lon[i].toDouble()))
+                        if (once) {
+                            if (receiver!!.dbid >= 0) {
+                                once = false
+                                val dat =
+                                    mainAct.locationDatabase.locationDao().getRoute(receiver!!.dbid)
+                                val lat = dat.latitudes.split("#")
+                                val lon = dat.longitudes.split("#")
+                                val tim = dat.times.split("#")
+                                for (i in 1..lat.lastIndex) {
+                                    recordedLocations.add(LatLng(lat[i].toDouble(),
+                                        lon[i].toDouble()))
+                                    if(tim[1].toLong() == 0L)
+                                        recordedTimes.add(tim[i].toLong())
+                                    else
+                                        recordedTimes.add(tim[i].toLong() - tim[1].toLong())
+                                }
+                                Log.println(Log.ASSERT, "Maps", recordedLocations.toString())
+                                Log.println(Log.ASSERT, "Maps", recordedTimes.toString())
                             }
-                            Log.println(Log.ASSERT,"Maps", recordedLocations.toString())
                         }
-                    }
-                    with(mMap) {
-                        clear()
-                        addPolyline(PolylineOptions().addAll(locList).color(R.color.orange_500))
-                        if(recordedLocations.size > 0)
-                            addPolyline(PolylineOptions().addAll(recordedLocations).color(R.color.black))
-                        addMarker(MarkerOptions().position(locationLatLng)
-                                .title("Current Location").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
-                        moveCamera(CameraUpdateFactory.newLatLng(locationLatLng))
+                        with(mMap) {
+                            clear()
+                            addPolyline(PolylineOptions().addAll(locList).color(Color.rgb(255,87,34)))
+                            if (recordedLocations.size > 0) {
+                                addPolyline(PolylineOptions().addAll(recordedLocations)
+                                    .color(R.color.black))
+
+                                for(i in recordedindex..recordedLocations.lastIndex){
+                                    if(receiver!!.elapsedtime >= recordedTimes[recordedindex]){
+                                        recordedindex = i
+                                    }
+                                }
+                                Log.println(Log.ASSERT, "Maps: recordedIndex",
+                                    recordedindex.toString() + " elapsedtime: " + receiver!!.elapsedtime.toString())
+                                addMarker(MarkerOptions().position(recordedLocations[recordedindex])
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)))
+                            }
+                            addMarker(MarkerOptions().position(locationLatLng)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)))
+                            moveCamera(CameraUpdateFactory.newLatLng(locationLatLng))
+                        }
                     }
                 }
                 mainHandler.postDelayed(this, 1000)
@@ -99,12 +123,14 @@ class RunMapsFragment : Fragment() {
     class TmpReceiver: BroadcastReceiver() {
         var loc: DoubleArray = DoubleArray(2)
         var dbid = -1
-        private var locList: MutableList<LatLng> = mutableListOf()
+        var elapsedtime: Long = -1
         override fun onReceive(p0: Context?, p1: Intent?) {
             if (p1 != null) {
-                Log.println(Log.ASSERT,"Broadcast Receiver", p1.action + " Received")
                 loc = p1.getDoubleArrayExtra("location")!!
                 dbid = p1.getIntExtra("databaseid", -1)
+                elapsedtime = p1.getLongExtra("elapsedtime", -1)
+                Log.println(Log.ASSERT,"Broadcast Receiver", "Received: $elapsedtime")
+
             } else {
                 Log.println(Log.ASSERT,"Broadcast Receiver", "Nothing Received")
             }

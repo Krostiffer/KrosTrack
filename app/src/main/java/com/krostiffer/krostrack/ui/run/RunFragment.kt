@@ -303,7 +303,7 @@ class RunFragment : Fragment() {
             latitudes = latitudes + "#" + loc.latitude.toString()
             longitudes = longitudes + "#" + loc.longitude.toString()
             speeds = speeds + "#" + loc.speed.toString()
-            times = times + "#" + loc.elapsedRealtimeNanos.toString()
+            times = times + "#" + (loc.elapsedRealtimeNanos - locList.first().elapsedRealtimeNanos).toString()
         }
 
         locationDao.insertLocation(

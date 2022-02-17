@@ -150,6 +150,7 @@ class RunNotificationService : Service() {
             intent.action = s
             intent.putExtra("location", lastLocation)
             intent.putExtra("databaseid", databaseID)
+            intent.putExtra("elapsedtime", locList.last().elapsedRealtimeNanos - startTime)
             sendBroadcast(intent)
         }
     }
